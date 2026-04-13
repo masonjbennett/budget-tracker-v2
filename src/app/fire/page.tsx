@@ -6,6 +6,7 @@ import MetricCard from "@/components/MetricCard";
 import StatusCard from "@/components/StatusCard";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/components/Footer";
+import Chart from "@/components/Chart";
 
 function fmt(val: number): string {
   return `$${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -154,18 +155,34 @@ export default function FirePage() {
             <MetricCard label="Best 10%" value={fmt(result.p90_ending)} delta="90th percentile" deltaColor="green" />
           </div>
 
-          {/* Fan chart placeholder */}
-          <div className="card min-h-[22rem] flex items-center justify-center mb-8">
-            <div className="text-center">
-              <div className="w-14 h-14 rounded-2xl bg-white/[0.03] flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                </svg>
-              </div>
-              <p className="text-sm text-slate-500 font-medium">Monte Carlo Fan Chart</p>
-              <p className="text-xs text-slate-600 mt-1">Percentile bands with portfolio trajectory — coming with Plotly</p>
-            </div>
-          </div>
+          {/* Fan chart */}
+          <Chart
+            data={[
+              // 10th-90th band
+              { x: result.ages, y: result.percentiles.p90, mode: "lines", line: { width: 0 }, showlegend: false, hoverinfo: "skip" },
+              { x: result.ages, y: result.percentiles.p10, mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(59,130,246,0.08)", name: "10th-90th", hoverinfo: "skip" },
+              // 25th-75th band
+              { x: result.ages, y: result.percentiles.p75, mode: "lines", line: { width: 0 }, showlegend: false, hoverinfo: "skip" },
+              { x: result.ages, y: result.percentiles.p25, mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(59,130,246,0.18)", name: "25th-75th", hoverinfo: "skip" },
+              // Median
+              { x: result.ages, y: result.percentiles.p50, mode: "lines", line: { color: "#3b82f6", width: 2.5 }, name: "Median", hovertemplate: "Age %{x}: $%{y:,.0f}<extra></extra>" },
+              // 5th percentile
+              { x: result.ages, y: result.percentiles.p5, mode: "lines", line: { color: "#ef4444", width: 1.5, dash: "dot" }, name: "5th pctl", hovertemplate: "Age %{x}: $%{y:,.0f}<extra></extra>" },
+            ]}
+            layout={{
+              xaxis: { title: { text: "Age", font: { size: 12, color: "#64748b" } } },
+              yaxis: { title: { text: "Portfolio Value", font: { size: 12, color: "#64748b" } }, tickformat: "$,.0f" },
+              shapes: [
+                { type: "line", x0: result.retire_age, x1: result.retire_age, y0: 0, y1: 1, yref: "paper", line: { color: "#eab308", width: 1.5, dash: "dash" } },
+                { type: "line", x0: result.ages[0], x1: result.ages[result.ages.length - 1], y0: 0, y1: 0, line: { color: "#ef4444", width: 1, dash: "dash" } },
+              ],
+              annotations: [
+                { x: result.retire_age, y: 1, yref: "paper", text: "Retirement", showarrow: false, font: { size: 11, color: "#eab308" }, yanchor: "bottom" },
+              ],
+            }}
+            height={400}
+            className="mb-8"
+          />
 
           {/* Methodology */}
           <div className="card bg-white/[0.02] border-white/[0.04]">

@@ -6,6 +6,7 @@ import MetricCard from "@/components/MetricCard";
 import StatusCard from "@/components/StatusCard";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/components/Footer";
+import Chart from "@/components/Chart";
 
 function fmt(val: number, decimals = 0): string {
   return `$${val.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
@@ -86,35 +87,38 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Spending breakdown placeholder */}
+      {/* Spending charts */}
       <div className="mt-10">
         <div className="flex items-center gap-3 mb-4">
           <h2 className="text-[1.05rem] font-semibold text-white">Monthly Spending</h2>
           <div className="flex-1 h-px bg-white/[0.06]" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="card min-h-[20rem] flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-white/[0.04] flex items-center justify-center mx-auto mb-3">
-                <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-                </svg>
-              </div>
-              <p className="text-sm text-slate-500 font-medium">Spending by Category</p>
-              <p className="text-xs text-slate-600 mt-1">Charts coming with Plotly integration</p>
-            </div>
-          </div>
-          <div className="card min-h-[20rem] flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-white/[0.04] flex items-center justify-center mx-auto mb-3">
-                <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <p className="text-sm text-slate-500 font-medium">Monthly Trend</p>
-              <p className="text-xs text-slate-600 mt-1">Charts coming with Plotly integration</p>
-            </div>
-          </div>
+          <Chart
+            data={[{
+              labels: ["Rent", "Groceries", "Transportation", "Shopping", "Dining Out", "Utilities", "Phone", "Gym", "Entertainment", "Subscriptions"],
+              values: [1900, 120.7, 127, 89.99, 45, 130, 75, 45, 22, 15.99],
+              type: "pie", hole: 0.5,
+              marker: { colors: ["#3b82f6", "#22c55e", "#6366f1", "#eab308", "#ec4899", "#06b6d4", "#8b5cf6", "#f97316", "#14b8a6", "#a855f7"],
+                        line: { color: "#0f172a", width: 2 } },
+              textinfo: "percent", textposition: "inside",
+              textfont: { size: 11, color: "#f8fafc" },
+              hovertemplate: "<b>%{label}</b><br>$%{value:,.2f}<br>%{percent}<extra></extra>",
+            }]}
+            layout={{ showlegend: true, legend: { font: { size: 10 } } }}
+            height={380}
+          />
+          <Chart
+            data={[
+              { x: ["Income", "Spent", "Savings"], y: [monthly, totalSpent, netSavings], type: "bar",
+                marker: { color: ["#3b82f6", "#ef4444", "#22c55e"], cornerradius: 4 },
+                text: [`$${monthly.toFixed(0)}`, `$${totalSpent.toFixed(0)}`, `$${netSavings.toFixed(0)}`],
+                textposition: "outside", textfont: { size: 12, color: "#94a3b8" },
+              }
+            ]}
+            layout={{ yaxis: { tickprefix: "$", tickformat: ",", title: { text: "" } }, showlegend: false }}
+            height={380}
+          />
         </div>
       </div>
 

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { api } from "@/lib/api";
-import MetricCard from "@/components/MetricCard";
-import StatusCard from "@/components/StatusCard";
+import PageHeader from "@/components/PageHeader";
+import Footer from "@/components/Footer";
 
 function fmt(val: number): string {
   return `$${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -23,8 +23,7 @@ export default function DebtPage() {
       api<any>("/api/debt-payoff", { debts, extra, strategy: "avalanche" }),
       api<any>("/api/debt-payoff", { debts, extra, strategy: "snowball" }),
     ]);
-    setResult(av);
-    setSnowball(sn);
+    setResult(av); setSnowball(sn);
   };
 
   const addDebt = () => {
@@ -36,31 +35,30 @@ export default function DebtPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white">Debt Payoff Planner</h1>
-      <p className="text-slate-400 mt-1 mb-6">Compare payoff strategies and see how extra payments accelerate your path to debt-free.</p>
+      <PageHeader title="Debt Payoff Planner" description="Compare payoff strategies and see how extra payments accelerate your path to debt-free. Uses standard amortization with monthly compounding." />
 
-      {/* Debt list */}
+      {/* Debt table */}
       {debts.length > 0 && (
-        <div className="card overflow-hidden mb-6">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-800/50">
+        <div className="card overflow-hidden p-0 mb-6">
+          <table>
+            <thead>
               <tr>
-                <th className="text-left px-4 py-3 text-slate-400 font-medium uppercase tracking-wider text-xs">Debt</th>
-                <th className="text-right px-4 py-3 text-slate-400 font-medium uppercase tracking-wider text-xs">Balance</th>
-                <th className="text-right px-4 py-3 text-slate-400 font-medium uppercase tracking-wider text-xs">Rate</th>
-                <th className="text-right px-4 py-3 text-slate-400 font-medium uppercase tracking-wider text-xs">Min Payment</th>
-                <th className="px-4 py-3"></th>
+                <th className="pl-5">Debt</th>
+                <th className="text-right">Balance</th>
+                <th className="text-right">Rate</th>
+                <th className="text-right">Min Payment</th>
+                <th className="pr-5 text-right w-20"></th>
               </tr>
             </thead>
             <tbody>
               {debts.map((d, i) => (
-                <tr key={i} className="border-t border-slate-700/50 hover:bg-slate-800/50/50 transition-colors">
-                  <td className="px-4 py-3 font-medium">{d.name}</td>
-                  <td className="px-4 py-3 text-right">{fmt(d.balance)}</td>
-                  <td className="px-4 py-3 text-right">{d.rate}%</td>
-                  <td className="px-4 py-3 text-right">{fmt(d.min_payment)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button onClick={() => setDebts(debts.filter((_, j) => j !== i))} className="text-red hover:underline text-xs">Remove</button>
+                <tr key={i}>
+                  <td className="pl-5 font-medium text-white">{d.name}</td>
+                  <td className="text-right font-num">{fmt(d.balance)}</td>
+                  <td className="text-right font-num">{d.rate}%</td>
+                  <td className="text-right font-num">{fmt(d.min_payment)}</td>
+                  <td className="pr-5 text-right">
+                    <button onClick={() => setDebts(debts.filter((_, j) => j !== i))} className="text-[0.72rem] text-slate-600 hover:text-red transition-colors">Remove</button>
                   </td>
                 </tr>
               ))}
@@ -70,57 +68,77 @@ export default function DebtPage() {
       )}
 
       {/* Add debt */}
-      <div className="grid grid-cols-5 gap-3 mb-6">
-        <input placeholder="Debt name" value={newDebt.name} onChange={(e) => setNewDebt({...newDebt, name: e.target.value})}
-          className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
-        <input type="number" placeholder="Balance" value={newDebt.balance || ""} onChange={(e) => setNewDebt({...newDebt, balance: +e.target.value})}
-          className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
-        <input type="number" placeholder="Rate %" value={newDebt.rate || ""} onChange={(e) => setNewDebt({...newDebt, rate: +e.target.value})}
-          className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
-        <input type="number" placeholder="Min payment" value={newDebt.min_payment || ""} onChange={(e) => setNewDebt({...newDebt, min_payment: +e.target.value})}
-          className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
-        <button onClick={addDebt} className="bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">Add</button>
+      <div className="card mb-6">
+        <h3 className="text-[0.82rem] font-semibold text-white mb-3">Add Debt</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <input placeholder="Debt name" value={newDebt.name} onChange={(e) => setNewDebt({...newDebt, name: e.target.value})} />
+          <input type="number" placeholder="Balance ($)" value={newDebt.balance || ""} onChange={(e) => setNewDebt({...newDebt, balance: +e.target.value})} />
+          <input type="number" placeholder="Rate %" value={newDebt.rate || ""} step={0.1} onChange={(e) => setNewDebt({...newDebt, rate: +e.target.value})} />
+          <input type="number" placeholder="Min payment ($)" value={newDebt.min_payment || ""} onChange={(e) => setNewDebt({...newDebt, min_payment: +e.target.value})} />
+          <button onClick={addDebt} className="btn-primary py-2.5">Add</button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4 mb-6">
-        <label className="text-sm font-medium text-slate-400">Extra Monthly Payment ($)</label>
-        <input type="number" value={extra} onChange={(e) => setExtra(+e.target.value)}
-          className="w-32 border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
-        <button onClick={calculate}
-          className="bg-accent text-white px-6 py-2 rounded-lg font-semibold hover:bg-accent/90 transition-all text-sm">
-          Compare Strategies
-        </button>
+      {/* Controls */}
+      <div className="card mb-8">
+        <div className="flex items-center gap-4">
+          <label className="text-[0.82rem] text-slate-400 font-medium whitespace-nowrap">Extra Monthly Payment</label>
+          <input type="number" value={extra} onChange={(e) => setExtra(+e.target.value)} className="w-28" />
+          <button onClick={calculate} className="btn-primary whitespace-nowrap">Compare Strategies</button>
+        </div>
       </div>
 
       {/* Results */}
       {result && snowball && result.months !== -1 && (
-        <div>
-          <hr className="border-slate-700/50 mb-8" />
-          <h2 className="text-xl font-bold text-white mb-4">Strategy Comparison</h2>
+        <div className="animate-fade-in">
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-[1.05rem] font-semibold text-white">Strategy Comparison</h2>
+            <div className="flex-1 h-px bg-white/[0.06]" />
+          </div>
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-slate-800/50 border-l-4 border-l-green/50 border border-slate-700/50 rounded-xl p-5">
-              <h3 className="text-lg font-bold text-green">Avalanche</h3>
-              <p className="text-xs text-slate-400">Highest interest rate first</p>
-              <p className="text-2xl font-bold mt-2">{result.months} months</p>
-              <p className="text-sm text-red mt-1">Interest: {fmt(result.total_interest)}</p>
+            <div className="card border-green/20 bg-green/[0.03]">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[0.95rem] font-bold text-green">Avalanche</h3>
+                <span className="badge badge-green">Recommended</span>
+              </div>
+              <p className="text-[0.75rem] text-slate-500">Highest interest rate first</p>
+              <p className="text-[2rem] font-bold text-white font-num mt-2">{result.months} months</p>
+              <p className="text-[0.82rem] text-slate-400 mt-1">{(result.months / 12).toFixed(1)} years · {fmt(result.total_interest)} interest</p>
             </div>
-            <div className="bg-slate-800/50 border-l-4 border-l-accent/50 border border-slate-700/50 rounded-xl p-5">
-              <h3 className="text-lg font-bold text-accent">Snowball</h3>
-              <p className="text-xs text-slate-400">Smallest balance first</p>
-              <p className="text-2xl font-bold mt-2">{snowball.months} months</p>
-              <p className="text-sm text-red mt-1">Interest: {fmt(snowball.total_interest)}</p>
+            <div className="card">
+              <h3 className="text-[0.95rem] font-bold text-accent mb-2">Snowball</h3>
+              <p className="text-[0.75rem] text-slate-500">Smallest balance first</p>
+              <p className="text-[2rem] font-bold text-white font-num mt-2">{snowball.months} months</p>
+              <p className="text-[0.82rem] text-slate-400 mt-1">{(snowball.months / 12).toFixed(1)} years · {fmt(snowball.total_interest)} interest</p>
             </div>
           </div>
           {snowball.total_interest > result.total_interest && (
-            <p className="text-green font-semibold">Avalanche saves you {fmt(snowball.total_interest - result.total_interest)} in interest!</p>
+            <div className="card bg-green/[0.03] border-green/20">
+              <p className="text-[0.85rem] text-green font-semibold">Avalanche saves you {fmt(snowball.total_interest - result.total_interest)} in interest.</p>
+            </div>
           )}
         </div>
       )}
+
       {result && result.months === -1 && (
-        <div className="bg-red/10 border border-red/30 rounded-xl p-5">
-          <p className="text-red font-semibold">Your payments don't cover the monthly interest. Increase payments to make progress.</p>
+        <div className="card bg-red/[0.05] border-red/20">
+          <p className="text-red font-semibold">Your payments don't cover monthly interest. Increase payments to make progress.</p>
         </div>
       )}
+
+      {!result && debts.length === 0 && (
+        <div className="card min-h-[16rem] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-14 h-14 rounded-2xl bg-white/[0.03] flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <p className="text-sm text-slate-400 font-medium">Debt-free is a great place to be</p>
+            <p className="text-xs text-slate-600 mt-1">Add debts above to compare payoff strategies.</p>
+          </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   );
 }

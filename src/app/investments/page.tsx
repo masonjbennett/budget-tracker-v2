@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { api } from "@/lib/api";
-import MetricCard from "@/components/MetricCard";
+import PageHeader from "@/components/PageHeader";
+import Footer from "@/components/Footer";
 
 function fmt(val: number): string {
   return `$${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -24,69 +25,51 @@ export default function InvestmentsPage() {
     setResults({ conservative, moderate, aggressive });
   };
 
-  const update = (field: string, value: any) => setInputs({ ...inputs, [field]: value });
+  const u = (field: string, value: any) => setInputs({ ...inputs, [field]: value });
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white">Investment Growth Projector</h1>
-      <p className="text-slate-400 mt-1 mb-6">Model compound growth across scenarios and see the true cost of waiting.</p>
+      <PageHeader title="Investment Growth Projector" description="Model compound growth across scenarios with income growth modeling." />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Starting Amount ($)</label>
-          <input type="number" value={inputs.starting_amount} onChange={(e) => update("starting_amount", +e.target.value)}
-            className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Monthly Contribution ($)</label>
-          <input type="number" value={inputs.monthly_contribution} onChange={(e) => update("monthly_contribution", +e.target.value)}
-            className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Time Horizon (years)</label>
-          <input type="range" min={1} max={50} value={inputs.time_horizon}
-            onChange={(e) => update("time_horizon", +e.target.value)} className="w-full accent-accent" />
-          <p className="text-sm text-slate-400">{inputs.time_horizon} years</p>
+      <div className="card mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div><label className="block text-[0.78rem] font-medium text-slate-400 mb-1.5">Starting Amount ($)</label>
+            <input type="number" value={inputs.starting_amount} onChange={(e) => u("starting_amount", +e.target.value)} /></div>
+          <div><label className="block text-[0.78rem] font-medium text-slate-400 mb-1.5">Monthly Contribution ($)</label>
+            <input type="number" value={inputs.monthly_contribution} onChange={(e) => u("monthly_contribution", +e.target.value)} /></div>
+          <div><label className="block text-[0.78rem] font-medium text-slate-400 mb-1.5">Time Horizon — {inputs.time_horizon} yrs</label>
+            <input type="range" min={1} max={50} value={inputs.time_horizon} onChange={(e) => u("time_horizon", +e.target.value)} /></div>
         </div>
       </div>
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-slate-400 mb-1">Income Growth (%/yr)</label>
-        <input type="number" value={inputs.contribution_growth} step={0.5} min={0} max={20}
-          onChange={(e) => update("contribution_growth", +e.target.value)}
-          className="w-32 border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-        <p className="text-xs text-slate-400 mt-1">Contributions grow with your salary. 3-5% typical.</p>
-      </div>
 
-      <button onClick={calculate}
-        className="bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent/90 hover:-translate-y-0.5 hover:shadow-lg transition-all mb-8">
-        Project Growth
-      </button>
+      <button onClick={calculate} className="btn-primary w-full py-3 mb-8">Project Growth</button>
 
       {results && (
-        <>
-          <hr className="border-slate-700/50 mb-8" />
-          <h2 className="text-xl font-bold text-white mb-4">Scenario Comparison</h2>
-          <div className="grid grid-cols-3 gap-4">
+        <div className="animate-fade-in">
+          <div className="grid grid-cols-3 gap-4 stagger">
             {[
-              { label: "Conservative (5%)", data: results.conservative, color: "border-l-accent" },
-              { label: "Moderate (7%)", data: results.moderate, color: "border-l-green" },
-              { label: "Aggressive (10%)", data: results.aggressive, color: "border-l-yellow" },
-            ].map(({ label, data, color }) => {
+              { label: "Conservative (5%)", data: results.conservative, color: "accent", border: "border-accent/20" },
+              { label: "Moderate (7%)", data: results.moderate, color: "green", border: "border-green/20" },
+              { label: "Aggressive (10%)", data: results.aggressive, color: "yellow", border: "border-yellow/20" },
+            ].map(({ label, data, color, border }) => {
               const final = data.values[data.values.length - 1];
               const contributed = data.contributions[data.contributions.length - 1];
-              const growth = final - contributed;
               return (
-                <div key={label} className={`bg-slate-800/50 border ${color} border-l-4 border-slate-700/50 rounded-xl p-5`}>
-                  <p className="font-semibold text-white">{label}</p>
-                  <p className="text-2xl font-bold mt-1">{fmt(final)}</p>
-                  <p className="text-sm text-slate-400 mt-1">Contributed: {fmt(contributed)}</p>
-                  <p className="text-sm text-green">Growth: {fmt(growth)}</p>
+                <div key={label} className={`card ${border}`}>
+                  <p className={`text-[0.82rem] font-semibold text-${color}`}>{label}</p>
+                  <p className="text-[1.8rem] font-bold text-white font-num mt-1">{fmt(final)}</p>
+                  <div className="mt-2 text-[0.78rem] space-y-1">
+                    <div className="flex justify-between"><span className="text-slate-500">Contributed</span><span className="font-num text-slate-400">{fmt(contributed)}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Growth</span><span className={`font-num text-${color}`}>{fmt(final - contributed)}</span></div>
+                  </div>
                 </div>
               );
             })}
           </div>
-        </>
+        </div>
       )}
+
+      <Footer />
     </div>
   );
 }

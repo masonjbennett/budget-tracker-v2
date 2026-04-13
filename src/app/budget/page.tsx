@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import PageHeader from "@/components/PageHeader";
+import Footer from "@/components/Footer";
 
 function fmt(val: number): string {
   return `$${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -15,12 +17,12 @@ const DEFAULT_BUDGET = {
 export default function BudgetPage() {
   const [budget, setBudget] = useState(DEFAULT_BUDGET);
   const [activeTab, setActiveTab] = useState<"needs" | "wants" | "savings">("needs");
-  const monthlyIncome = 5910; // would come from user data
+  const monthlyIncome = 5910;
 
   const tabs = [
-    { key: "needs" as const, label: "Needs (50%)", target: 0.5 },
-    { key: "wants" as const, label: "Wants (30%)", target: 0.3 },
-    { key: "savings" as const, label: "Savings (20%)", target: 0.2 },
+    { key: "needs" as const, label: "Needs", pct: "50%", target: 0.5, icon: "🏠" },
+    { key: "wants" as const, label: "Wants", pct: "30%", target: 0.3, icon: "🎉" },
+    { key: "savings" as const, label: "Savings", pct: "20%", target: 0.2, icon: "💎" },
   ];
 
   const totalAll = Object.values(budget).reduce((sum, cat) => sum + Object.values(cat).reduce((s, v) => s + v, 0), 0);
@@ -32,27 +34,24 @@ export default function BudgetPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white">Budget Builder</h1>
-      <p className="text-slate-400 mt-1 mb-6">Allocate your take-home pay using the 50/30/20 framework.</p>
+      <PageHeader title="Budget Builder" description="Allocate your take-home pay using the 50/30/20 framework — or customize it to fit your life." />
 
       {/* Unallocated banner */}
-      <div className={`border-l-4 rounded-xl p-4 mb-6 ${remaining >= 0 ? "bg-green/10 border-l-green" : "bg-red/10 border-l-red"}`}>
+      <div className={`card mb-6 ${remaining >= 0 ? "border-green/20 bg-green/[0.03]" : "border-red/20 bg-red/[0.03]"}`}>
         <div className="flex justify-between items-center">
-          <span>Monthly Take-Home: <strong>{fmt(monthlyIncome)}</strong></span>
-          <span className={`font-bold ${remaining >= 0 ? "text-green" : "text-red"}`}>
+          <span className="text-[0.85rem] text-slate-300">Monthly Take-Home: <strong className="text-white font-num">{fmt(monthlyIncome)}</strong></span>
+          <span className={`text-[0.9rem] font-bold font-num ${remaining >= 0 ? "text-green" : "text-red"}`}>
             {remaining >= 0 ? `${fmt(remaining)} unallocated` : `${fmt(Math.abs(remaining))} over budget`}
           </span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-800/50 rounded-xl p-1 mb-6">
+      <div className="tab-list mb-6">
         {tabs.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-              activeTab === tab.key ? "bg-slate-700 shadow-sm text-white font-semibold" : "text-slate-400 hover:text-white"
-            }`}>
-            {tab.label}
+            className={`tab ${activeTab === tab.key ? "tab-active" : ""}`}>
+            {tab.label} ({tab.pct})
           </button>
         ))}
       </div>
@@ -61,34 +60,37 @@ export default function BudgetPage() {
       <div className="grid grid-cols-2 gap-4 mb-8">
         {Object.entries(budget[activeTab]).map(([name, amount]) => (
           <div key={name}>
-            <label className="block text-sm font-medium text-slate-400 mb-1">{name}</label>
-            <input type="number" value={amount} onChange={(e) => updateCategory(activeTab, name, +e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+            <label className="block text-[0.78rem] font-medium text-slate-400 mb-1.5">{name}</label>
+            <input type="number" value={amount} onChange={(e) => updateCategory(activeTab, name, +e.target.value)} />
           </div>
         ))}
       </div>
 
       {/* Summary */}
-      <hr className="border-slate-700/50 mb-6" />
-      <h2 className="text-lg font-bold text-white mb-4">Budget Summary</h2>
+      <div className="flex items-center gap-3 mb-4">
+        <h2 className="text-[1.05rem] font-semibold text-white">Budget Summary</h2>
+        <div className="flex-1 h-px bg-white/[0.06]" />
+      </div>
       <div className="grid grid-cols-3 gap-4">
         {tabs.map((tab) => {
           const total = Object.values(budget[tab.key]).reduce((s, v) => s + v, 0);
           const target = monthlyIncome * tab.target;
           const pct = totalAll > 0 ? (total / totalAll * 100) : 0;
+          const onTrack = total <= target;
           return (
-            <div key={tab.key} className="card p-4">
-              <p className="text-sm text-slate-400 font-medium">{tab.label}</p>
-              <p className="text-xl font-bold">{fmt(total)}</p>
-              <p className="text-xs text-slate-400">Guideline: {fmt(target)} · Actual: {pct.toFixed(0)}%</p>
-              <div className="bg-slate-800/50 rounded-full h-2 mt-2">
-                <div className={`h-full rounded-full transition-all ${total <= target ? "bg-green" : "bg-red"}`}
-                  style={{ width: `${Math.min(total / target * 100, 100)}%` }} />
+            <div key={tab.key} className="card">
+              <p className="text-[0.78rem] text-slate-400 font-medium">{tab.label} ({tab.pct})</p>
+              <p className="text-xl font-bold text-white font-num mt-1">{fmt(total)}</p>
+              <p className="text-[0.72rem] text-slate-600 mt-1">Guideline: {fmt(target)} · Actual: {pct.toFixed(0)}%</p>
+              <div className="progress-track mt-3">
+                <div className={`progress-fill ${onTrack ? "bg-green" : "bg-red"}`} style={{ width: `${Math.min(total / target * 100, 100)}%` }} />
               </div>
             </div>
           );
         })}
       </div>
+
+      <Footer />
     </div>
   );
 }

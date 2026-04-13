@@ -3,146 +3,174 @@
 import { useState } from "react";
 import { api } from "@/lib/api";
 import MetricCard from "@/components/MetricCard";
+import PageHeader from "@/components/PageHeader";
+import Footer from "@/components/Footer";
 
 function fmt(val: number): string {
   return `$${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 }
 
+const STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","District of Columbia"];
+
+function InputField({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-[0.78rem] font-medium text-slate-400 mb-1.5">{label}</label>
+      {children}
+      {help && <p className="text-[0.68rem] text-slate-600 mt-1">{help}</p>}
+    </div>
+  );
+}
+
 export default function IncomePage() {
   const [income, setIncome] = useState({
-    gross_salary: 95000,
-    state: "New York",
-    filing_status: "Single",
-    contribution_401k: 6,
-    health_insurance: 180,
-    hsa: 100,
-    bonus_amount: 10000,
-    bonus_type: "Annual (spread monthly)",
-    student_loan_interest: 0,
-    charitable: 0,
+    gross_salary: 95000, state: "New York", filing_status: "Single",
+    contribution_401k: 6, health_insurance: 180, hsa: 100,
+    bonus_amount: 10000, bonus_type: "Annual (spread monthly)",
+    student_loan_interest: 0, charitable: 0,
   });
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const calculate = async () => {
     setLoading(true);
-    try {
-      const data = await api<any>("/api/take-home", income);
-      setResult(data);
-    } catch (e) {
-      console.error(e);
-    }
+    try { setResult(await api<any>("/api/take-home", income)); }
+    catch (e) { console.error(e); }
     setLoading(false);
   };
 
-  const update = (field: string, value: any) => {
-    setIncome((prev) => ({ ...prev, [field]: value }));
-  };
+  const u = (field: string, value: any) => setIncome((p) => ({ ...p, [field]: value }));
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white">Income Setup</h1>
-      <p className="text-slate-400 mt-1 mb-6">Configure your salary, deductions, and tax situation to calculate your true take-home pay.</p>
+      <PageHeader title="Income Setup" description="Configure your salary, deductions, and tax situation to calculate your true take-home pay." />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        {/* Left column */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white">Salary & Location</h2>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Annual Gross Salary ($)</label>
-            <input type="number" value={income.gross_salary} onChange={(e) => update("gross_salary", +e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="card">
+            <h3 className="text-[0.85rem] font-semibold text-white mb-4 flex items-center gap-2">
+              <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+              Salary & Location
+            </h3>
+            <div className="space-y-4">
+              <InputField label="Annual Gross Salary">
+                <input type="number" value={income.gross_salary} onChange={(e) => u("gross_salary", +e.target.value)} />
+              </InputField>
+              <div className="grid grid-cols-2 gap-4">
+                <InputField label="State">
+                  <select value={income.state} onChange={(e) => u("state", e.target.value)}>
+                    {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </InputField>
+                <InputField label="Filing Status">
+                  <select value={income.filing_status} onChange={(e) => u("filing_status", e.target.value)}>
+                    {["Single","Married Filing Jointly","Married Filing Separately","Head of Household"].map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </InputField>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">State</label>
-            <select value={income.state} onChange={(e) => update("state", e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none bg-slate-800/50">
-              {["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","District of Columbia"].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+
+          <div className="card">
+            <h3 className="text-[0.85rem] font-semibold text-white mb-4 flex items-center gap-2">
+              <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+              Pre-Tax Deductions
+            </h3>
+            <div className="space-y-4">
+              <InputField label={`401(k) Contribution — ${income.contribution_401k}%`} help={`${fmt(income.gross_salary * income.contribution_401k / 100)}/year · 2026 limit: $24,500`}>
+                <input type="range" min={0} max={50} value={income.contribution_401k} onChange={(e) => u("contribution_401k", +e.target.value)} />
+              </InputField>
+              <div className="grid grid-cols-2 gap-4">
+                <InputField label="Health Insurance ($/mo)">
+                  <input type="number" value={income.health_insurance} onChange={(e) => u("health_insurance", +e.target.value)} />
+                </InputField>
+                <InputField label="HSA ($/mo)" help="2026 limit: $4,400/yr">
+                  <input type="number" value={income.hsa} onChange={(e) => u("hsa", +e.target.value)} />
+                </InputField>
+              </div>
+              <InputField label="Student Loan Interest ($/yr)" help="Max $2,500 above-the-line">
+                <input type="number" value={income.student_loan_interest} max={2500} onChange={(e) => u("student_loan_interest", Math.min(2500, +e.target.value))} />
+              </InputField>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Filing Status</label>
-            <select value={income.filing_status} onChange={(e) => update("filing_status", e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none bg-slate-800/50">
-              {["Single", "Married Filing Jointly", "Married Filing Separately", "Head of Household"].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+
+          <div className="card">
+            <h3 className="text-[0.85rem] font-semibold text-white mb-4 flex items-center gap-2">
+              <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Bonus
+            </h3>
+            <div className="space-y-4">
+              <InputField label="Bonus Type">
+                <select value={income.bonus_type} onChange={(e) => u("bonus_type", e.target.value)}>
+                  {["None","Annual (spread monthly)","Signing (lump sum)"].map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </InputField>
+              {income.bonus_type !== "None" && (
+                <InputField label="Bonus Amount">
+                  <input type="number" value={income.bonus_amount} onChange={(e) => u("bonus_amount", +e.target.value)} />
+                </InputField>
+              )}
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Bonus Type</label>
-            <select value={income.bonus_type} onChange={(e) => update("bonus_type", e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none bg-slate-800/50">
-              {["None", "Annual (spread monthly)", "Signing (lump sum)"].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-          {income.bonus_type !== "None" && (
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Bonus Amount ($)</label>
-              <input type="number" value={income.bonus_amount} onChange={(e) => update("bonus_amount", +e.target.value)}
-                className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+
+          <button onClick={calculate} disabled={loading}
+            className="btn-primary w-full py-3 flex items-center justify-center gap-2 disabled:opacity-50">
+            {loading ? (
+              <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Calculating...</>
+            ) : "Calculate Take-Home Pay"}
+          </button>
+        </div>
+
+        <div>
+          {result ? (
+            <div className="space-y-4 stagger sticky top-8">
+              <div className="card bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border-blue-500/20">
+                <p className="text-[0.68rem] uppercase tracking-[0.08em] text-blue-400 font-semibold">Monthly Take-Home</p>
+                <p className="text-[2.5rem] font-bold text-white mt-1 leading-tight font-num">{fmt(result.monthly_take_home)}</p>
+                <p className="text-[0.82rem] text-slate-400 mt-1">{fmt(result.annual_take_home)} / year</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <MetricCard label="Federal Tax" value={fmt(result.fed_tax)} delta={`${result.marginal_fed.toFixed(0)}% marginal`} />
+                <MetricCard label="State Tax" value={fmt(result.state_tax)} />
+                <MetricCard label="FICA" value={fmt(result.fica)} />
+                <MetricCard label="Pre-Tax" value={fmt(result.pretax)} />
+              </div>
+              <div className="card">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[0.78rem] text-slate-400">Effective Tax Rate</span>
+                  <span className="text-[1.1rem] font-bold text-yellow font-num">{result.effective_rate.toFixed(1)}%</span>
+                </div>
+                <div className="progress-track">
+                  <div className="progress-fill bg-yellow" style={{ width: `${result.effective_rate}%` }} />
+                </div>
+                <p className="text-[0.68rem] text-slate-600 mt-2">You keep {(100 - result.effective_rate).toFixed(1)}% of gross income after all taxes.</p>
+              </div>
+              <div className="card">
+                <h3 className="text-[0.78rem] font-semibold text-white mb-2">Deduction Summary</h3>
+                <div className="space-y-1.5 text-[0.82rem]">
+                  <div className="flex justify-between"><span className="text-slate-400">AGI</span><span className="font-num text-slate-300">{fmt(result.agi)}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Standard Deduction</span><span className="font-num text-slate-300">-{fmt(result.std_ded)}</span></div>
+                  <div className="flex justify-between border-t border-white/[0.06] pt-1.5 mt-1.5"><span className="text-slate-300 font-medium">Taxable Income</span><span className="font-num text-white font-semibold">{fmt(result.taxable)}</span></div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="card min-h-[28rem] flex items-center justify-center sticky top-8">
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-7 h-7 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <p className="text-sm text-slate-500 font-medium">Your take-home breakdown</p>
+                <p className="text-xs text-slate-600 mt-1 max-w-[16rem] mx-auto">Adjust your income details on the left and click Calculate to see your results.</p>
+              </div>
             </div>
           )}
         </div>
-
-        {/* Right column */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white">Pre-Tax Deductions</h2>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">401(k) Contribution (%)</label>
-            <input type="range" min={0} max={100} value={income.contribution_401k}
-              onChange={(e) => update("contribution_401k", +e.target.value)}
-              className="w-full accent-accent" />
-            <p className="text-sm text-slate-400 mt-1">{income.contribution_401k}% = {fmt(income.gross_salary * income.contribution_401k / 100)}/year</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Health Insurance ($/month)</label>
-            <input type="number" value={income.health_insurance} onChange={(e) => update("health_insurance", +e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">HSA Contribution ($/month)</label>
-            <input type="number" value={income.hsa} onChange={(e) => update("hsa", +e.target.value)}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Student Loan Interest ($/year)</label>
-            <input type="number" value={income.student_loan_interest} max={2500}
-              onChange={(e) => update("student_loan_interest", Math.min(2500, +e.target.value))}
-              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-            <p className="text-xs text-slate-400 mt-1">Max $2,500. Above-the-line deduction.</p>
-          </div>
-        </div>
       </div>
 
-      <button onClick={calculate} disabled={loading}
-        className="bg-accent text-white px-8 py-3 rounded-lg font-semibold hover:bg-accent/90 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 disabled:opacity-50">
-        {loading ? "Calculating..." : "Calculate Take-Home"}
-      </button>
-
-      {result && (
-        <div className="mt-8">
-          <hr className="border-slate-700/50 mb-8" />
-          <h2 className="text-xl font-bold text-white mb-1">Take-Home Breakdown</h2>
-          <p className="text-slate-400 text-sm mb-4">Your estimated net pay after all taxes and deductions.</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <MetricCard label="Annual Gross" value={fmt(result.annual_gross)} />
-            <MetricCard label="Total Tax" value={fmt(result.total_tax)} delta={`-${result.effective_rate.toFixed(1)}% effective`} deltaColor="red" />
-            <MetricCard label="Annual Take-Home" value={fmt(result.annual_take_home)} />
-            <MetricCard label="Monthly Take-Home" value={fmt(result.monthly_take_home)} />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <MetricCard label="Federal Tax" value={fmt(result.fed_tax)} delta={`${result.marginal_fed.toFixed(0)}% marginal`} />
-            <MetricCard label="State Tax" value={fmt(result.state_tax)} />
-            <MetricCard label="FICA" value={fmt(result.fica)} />
-            <MetricCard label="401(k) + Pre-Tax" value={fmt(result.pretax)} />
-          </div>
-        </div>
-      )}
+      <Footer />
     </div>
   );
 }

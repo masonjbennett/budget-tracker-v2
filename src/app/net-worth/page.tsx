@@ -21,8 +21,8 @@ export default function NetWorthPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-primary">Net Worth Tracker</h1>
-      <p className="text-dim mt-1 mb-6">Track assets, liabilities, and net worth over time.</p>
+      <h1 className="text-3xl font-bold text-white">Net Worth Tracker</h1>
+      <p className="text-slate-400 mt-1 mb-6">Track assets, liabilities, and net worth over time.</p>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         <MetricCard label="Total Assets" value={fmt(totalAssets)} />
@@ -32,27 +32,27 @@ export default function NetWorthPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <h2 className="text-lg font-bold text-primary mb-3">Assets</h2>
+          <h2 className="text-lg font-bold text-white mb-3">Assets</h2>
           <div className="space-y-3">
             {Object.entries(assets).map(([name, value]) => (
               <div key={name} className="flex items-center gap-3">
-                <label className="text-sm text-dim w-28">{name}</label>
+                <label className="text-sm text-slate-400 w-28">{name}</label>
                 <input type="number" value={value}
                   onChange={(e) => setAssets({ ...assets, [name]: +e.target.value })}
-                  className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
+                  className="flex-1 border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
               </div>
             ))}
           </div>
         </div>
         <div>
-          <h2 className="text-lg font-bold text-primary mb-3">Liabilities</h2>
+          <h2 className="text-lg font-bold text-white mb-3">Liabilities</h2>
           <div className="space-y-3">
             {Object.entries(liabilities).map(([name, value]) => (
               <div key={name} className="flex items-center gap-3">
-                <label className="text-sm text-dim w-28">{name}</label>
+                <label className="text-sm text-slate-400 w-28">{name}</label>
                 <input type="number" value={value}
                   onChange={(e) => setLiabilities({ ...liabilities, [name]: +e.target.value })}
-                  className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
+                  className="flex-1 border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
               </div>
             ))}
           </div>

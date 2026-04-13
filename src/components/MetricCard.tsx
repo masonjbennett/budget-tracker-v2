@@ -9,25 +9,22 @@ interface MetricCardProps {
 }
 
 export default function MetricCard({ label, value, delta, deltaColor = "default", help }: MetricCardProps) {
-  const deltaColorClass = {
+  const deltaClass = {
     green: "text-green",
     red: "text-red",
-    default: "text-dim",
+    default: "text-muted",
   }[deltaColor];
 
   return (
-    <div className="card group animate-fade-in">
-      <p className="text-[0.7rem] uppercase tracking-[0.06em] text-dim font-semibold" title={help}>
+    <div className="card animate-fade-in">
+      <p className="text-[0.68rem] uppercase tracking-[0.08em] text-muted font-medium" title={help}>
         {label}
-        {help && <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-accent cursor-help">?</span>}
       </p>
-      <p className="text-[1.65rem] font-bold text-primary mt-1.5 tracking-tight leading-tight" style={{ fontFamily: "var(--font-display)" }}>
+      <p className="text-[1.7rem] font-bold text-primary mt-1 tracking-tight leading-tight font-num">
         {value}
       </p>
       {delta && (
-        <p className={`text-[0.8rem] mt-1.5 font-medium ${deltaColorClass}`}>
-          {delta}
-        </p>
+        <p className={`text-[0.78rem] mt-1.5 font-medium ${deltaClass}`}>{delta}</p>
       )}
     </div>
   );

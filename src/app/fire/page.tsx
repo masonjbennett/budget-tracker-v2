@@ -49,8 +49,8 @@ export default function FirePage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-primary">FIRE Calculator</h1>
-      <p className="text-dim mt-1 mb-6">
+      <h1 className="text-3xl font-bold text-white">FIRE Calculator</h1>
+      <p className="text-slate-400 mt-1 mb-6">
         Financial Independence, Retire Early — calculate when your portfolio can sustain your lifestyle.
         Based on the 4% safe withdrawal rate from the Trinity Study, with inflation-adjusted FIRE targets.
       </p>
@@ -59,42 +59,42 @@ export default function FirePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-dim mb-1">Annual Take-Home ($)</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Annual Take-Home ($)</label>
             <input type="number" value={inputs.annual_savings + inputs.annual_expenses}
               onChange={(e) => update("annual_savings", +e.target.value - inputs.annual_expenses)}
-              className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-dim mb-1">Annual Expenses ($)</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Annual Expenses ($)</label>
             <input type="number" value={inputs.annual_expenses} onChange={(e) => update("annual_expenses", +e.target.value)}
-              className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
           </div>
         </div>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-dim mb-1">Current Portfolio ($)</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Current Portfolio ($)</label>
             <input type="number" value={inputs.portfolio} onChange={(e) => update("portfolio", +e.target.value)}
-              className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-dim mb-1">Current Age</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Current Age</label>
             <input type="number" value={inputs.current_age} min={18} max={80}
               onChange={(e) => update("current_age", +e.target.value)}
-              className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
           </div>
         </div>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-dim mb-1">Stock Allocation (%)</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Stock Allocation (%)</label>
             <input type="range" min={0} max={100} step={5} value={inputs.stock_pct}
               onChange={(e) => update("stock_pct", +e.target.value)} className="w-full accent-accent" />
-            <p className="text-sm text-dim">{inputs.stock_pct}% stocks / {100 - inputs.stock_pct}% bonds</p>
+            <p className="text-sm text-slate-400">{inputs.stock_pct}% stocks / {100 - inputs.stock_pct}% bonds</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-dim mb-1">Retirement Age</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Retirement Age</label>
             <input type="number" value={inputs.retire_age} min={25} max={80}
               onChange={(e) => update("retire_age", +e.target.value)}
-              className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+              className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
           </div>
         </div>
       </div>
@@ -117,8 +117,8 @@ export default function FirePage() {
       {/* Monte Carlo results */}
       {result && (
         <div>
-          <hr className="border-border mb-8" />
-          <h2 className="text-xl font-bold text-primary mb-4">Monte Carlo Results</h2>
+          <hr className="border-slate-700/50 mb-8" />
+          <h2 className="text-xl font-bold text-white mb-4">Monte Carlo Results</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StatusCard label="Success Rate" value={`${result.success_rate.toFixed(0)}%`}
               status={result.success_rate >= 85 ? "Strong" : result.success_rate >= 70 ? "Moderate" : "At Risk"}
@@ -130,9 +130,9 @@ export default function FirePage() {
           </div>
 
           {/* Methodology */}
-          <div className="bg-surface border border-border rounded-xl p-5 mb-8">
-            <p className="font-semibold text-primary mb-1">What This Means</p>
-            <p className="text-sm text-dim">
+          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mb-8">
+            <p className="font-semibold text-white mb-1">What This Means</p>
+            <p className="text-sm text-slate-400">
               Out of {result.n_sims.toLocaleString()} simulated market scenarios, your portfolio survived in{" "}
               <strong className={result.success_rate >= 85 ? "text-green" : "text-red"}>{result.success_count.toLocaleString()}</strong> ({result.success_rate.toFixed(0)}%).
               Assumes {result.stock_pct}% stocks / {100 - result.stock_pct}% bonds with Cholesky-correlated returns.
@@ -145,9 +145,9 @@ export default function FirePage() {
       {/* Social Security */}
       {ssResult && (
         <div>
-          <hr className="border-border mb-8" />
-          <h2 className="text-xl font-bold text-primary mb-1">Social Security Estimation</h2>
-          <p className="text-dim text-sm mb-4">Simplified estimate based on 2026 bend points.</p>
+          <hr className="border-slate-700/50 mb-8" />
+          <h2 className="text-xl font-bold text-white mb-1">Social Security Estimation</h2>
+          <p className="text-slate-400 text-sm mb-4">Simplified estimate based on 2026 bend points.</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <MetricCard label="Est. Monthly SS" value={fmt(ssResult.monthly)} />
             <MetricCard label="Est. Annual SS" value={fmt(ssResult.annual)} />

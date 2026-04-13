@@ -28,33 +28,33 @@ export default function InvestmentsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-primary">Investment Growth Projector</h1>
-      <p className="text-dim mt-1 mb-6">Model compound growth across scenarios and see the true cost of waiting.</p>
+      <h1 className="text-3xl font-bold text-white">Investment Growth Projector</h1>
+      <p className="text-slate-400 mt-1 mb-6">Model compound growth across scenarios and see the true cost of waiting.</p>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-dim mb-1">Starting Amount ($)</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Starting Amount ($)</label>
           <input type="number" value={inputs.starting_amount} onChange={(e) => update("starting_amount", +e.target.value)}
-            className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+            className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-dim mb-1">Monthly Contribution ($)</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Monthly Contribution ($)</label>
           <input type="number" value={inputs.monthly_contribution} onChange={(e) => update("monthly_contribution", +e.target.value)}
-            className="w-full border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+            className="w-full border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-dim mb-1">Time Horizon (years)</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Time Horizon (years)</label>
           <input type="range" min={1} max={50} value={inputs.time_horizon}
             onChange={(e) => update("time_horizon", +e.target.value)} className="w-full accent-accent" />
-          <p className="text-sm text-dim">{inputs.time_horizon} years</p>
+          <p className="text-sm text-slate-400">{inputs.time_horizon} years</p>
         </div>
       </div>
       <div className="mb-6">
-        <label className="block text-sm font-medium text-dim mb-1">Income Growth (%/yr)</label>
+        <label className="block text-sm font-medium text-slate-400 mb-1">Income Growth (%/yr)</label>
         <input type="number" value={inputs.contribution_growth} step={0.5} min={0} max={20}
           onChange={(e) => update("contribution_growth", +e.target.value)}
-          className="w-32 border border-border rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
-        <p className="text-xs text-dim mt-1">Contributions grow with your salary. 3-5% typical.</p>
+          className="w-32 border border-slate-700/50 rounded-lg px-4 py-2.5 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none" />
+        <p className="text-xs text-slate-400 mt-1">Contributions grow with your salary. 3-5% typical.</p>
       </div>
 
       <button onClick={calculate}
@@ -64,8 +64,8 @@ export default function InvestmentsPage() {
 
       {results && (
         <>
-          <hr className="border-border mb-8" />
-          <h2 className="text-xl font-bold text-primary mb-4">Scenario Comparison</h2>
+          <hr className="border-slate-700/50 mb-8" />
+          <h2 className="text-xl font-bold text-white mb-4">Scenario Comparison</h2>
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: "Conservative (5%)", data: results.conservative, color: "border-l-accent" },
@@ -76,10 +76,10 @@ export default function InvestmentsPage() {
               const contributed = data.contributions[data.contributions.length - 1];
               const growth = final - contributed;
               return (
-                <div key={label} className={`bg-white border ${color} border-l-4 border-border rounded-xl p-5`}>
-                  <p className="font-semibold text-primary">{label}</p>
+                <div key={label} className={`bg-slate-800/50 border ${color} border-l-4 border-slate-700/50 rounded-xl p-5`}>
+                  <p className="font-semibold text-white">{label}</p>
                   <p className="text-2xl font-bold mt-1">{fmt(final)}</p>
-                  <p className="text-sm text-dim mt-1">Contributed: {fmt(contributed)}</p>
+                  <p className="text-sm text-slate-400 mt-1">Contributed: {fmt(contributed)}</p>
                   <p className="text-sm text-green">Growth: {fmt(growth)}</p>
                 </div>
               );

@@ -9,26 +9,26 @@ interface StatusCardProps {
 }
 
 const colorMap = {
-  green: { text: "text-green", bg: "bg-green/8", dot: "bg-green", border: "border-green/20" },
-  yellow: { text: "text-yellow", bg: "bg-yellow/8", dot: "bg-yellow", border: "border-yellow/20" },
-  red: { text: "text-red", bg: "bg-red/8", dot: "bg-red", border: "border-red/20" },
-  blue: { text: "text-accent", bg: "bg-accent/8", dot: "bg-accent", border: "border-accent/20" },
+  green: { text: "text-green", bg: "bg-green/10", dot: "bg-green", glow: "glow-green" },
+  yellow: { text: "text-yellow", bg: "bg-yellow/10", dot: "bg-yellow", glow: "" },
+  red: { text: "text-red", bg: "bg-red/10", dot: "bg-red", glow: "glow-red" },
+  blue: { text: "text-accent", bg: "bg-accent/10", dot: "bg-accent", glow: "glow-blue" },
 };
 
 export default function StatusCard({ label, value, status, color, description }: StatusCardProps) {
   const c = colorMap[color];
   return (
-    <div className="card animate-fade-in">
-      <p className="text-[0.7rem] uppercase tracking-[0.06em] text-dim font-semibold">{label}</p>
-      <p className={`text-[2rem] font-bold mt-1.5 leading-tight ${c.text}`} style={{ fontFamily: "var(--font-display)" }}>
+    <div className={`card animate-fade-in ${c.glow}`}>
+      <p className="text-[0.68rem] uppercase tracking-[0.08em] text-muted font-medium">{label}</p>
+      <p className={`text-[2rem] font-bold mt-1 leading-tight font-num ${c.text}`}>
         {value}
       </p>
       <div className={`inline-flex items-center gap-1.5 mt-2.5 px-2.5 py-1 rounded-full ${c.bg}`}>
         <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-        <span className={`text-xs font-semibold ${c.text}`}>{status}</span>
+        <span className={`text-[0.72rem] font-semibold ${c.text}`}>{status}</span>
       </div>
       {description && (
-        <p className="text-[0.78rem] text-dim mt-3 leading-relaxed">{description}</p>
+        <p className="text-[0.75rem] text-muted mt-3 leading-relaxed">{description}</p>
       )}
     </div>
   );

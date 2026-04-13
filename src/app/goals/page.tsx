@@ -23,8 +23,8 @@ export default function GoalsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-primary">Savings Goals</h1>
-      <p className="text-dim mt-1 mb-6">Set targets, track progress, and see how much to save each month.</p>
+      <h1 className="text-3xl font-bold text-white">Savings Goals</h1>
+      <p className="text-slate-400 mt-1 mb-6">Set targets, track progress, and see how much to save each month.</p>
 
       {/* Goal cards */}
       <div className="space-y-4 mb-8">
@@ -37,19 +37,19 @@ export default function GoalsPage() {
           const color = pct >= 100 ? "green" : pct >= 75 ? "green" : pct >= 40 ? "yellow" : "accent";
 
           return (
-            <div key={i} className="bg-white border border-border rounded-xl p-5 hover:shadow-md transition-all">
+            <div key={i} className="card p-5 hover:shadow-md transition-all">
               <div className="flex justify-between items-center mb-2">
                 <div>
-                  <span className="font-bold text-primary text-lg">{goal.name}</span>
-                  <span className="text-dim text-xs ml-2">Priority #{goal.priority}</span>
+                  <span className="font-bold text-white text-lg">{goal.name}</span>
+                  <span className="text-slate-400 text-xs ml-2">Priority #{goal.priority}</span>
                 </div>
                 <span className={`text-xl font-bold text-${color}`}>{pct.toFixed(0)}%</span>
               </div>
-              <div className="bg-surface rounded-full h-3 mb-2">
+              <div className="bg-slate-800/50 rounded-full h-3 mb-2">
                 <div className={`bg-${color} h-full rounded-full transition-all duration-500`}
                   style={{ width: `${Math.min(pct, 100)}%` }} />
               </div>
-              <div className="flex justify-between text-sm text-dim">
+              <div className="flex justify-between text-sm text-slate-400">
                 <span>{fmt(goal.current)} / {fmt(goal.target)}</span>
                 <span>{fmt(monthlyNeeded)}/mo needed · {daysLeft} days left</span>
               </div>
@@ -58,7 +58,7 @@ export default function GoalsPage() {
                   const updated = [...goals];
                   updated[i] = { ...goal, current: +e.target.value };
                   setGoals(updated);
-                }} className="w-32 border border-border rounded-lg px-3 py-1.5 text-sm focus:border-accent outline-none" />
+                }} className="w-32 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm focus:border-accent outline-none" />
                 <button onClick={() => setGoals(goals.filter((_, j) => j !== i))}
                   className="text-red text-xs hover:underline">Remove</button>
               </div>
@@ -68,15 +68,15 @@ export default function GoalsPage() {
       </div>
 
       {/* Add goal */}
-      <div className="bg-white border border-border rounded-xl p-5">
-        <h2 className="font-bold text-primary mb-3">Add Goal</h2>
+      <div className="card p-5">
+        <h2 className="font-bold text-white mb-3">Add Goal</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <input placeholder="Goal name" value={newGoal.name} onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
-            className="border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
+            className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
           <input type="number" placeholder="Target ($)" value={newGoal.target || ""} onChange={(e) => setNewGoal({ ...newGoal, target: +e.target.value })}
-            className="border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
+            className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
           <input type="date" value={newGoal.deadline} onChange={(e) => setNewGoal({ ...newGoal, deadline: e.target.value })}
-            className="border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
+            className="border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
           <button onClick={addGoal} className="bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">Add Goal</button>
         </div>
       </div>

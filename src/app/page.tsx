@@ -30,9 +30,9 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div>
-        <div className="skeleton h-8 w-80 mb-2" />
-        <div className="skeleton h-1 w-full mb-2" />
-        <div className="skeleton h-4 w-96 mb-8" />
+        <div className="skeleton h-8 w-72 mb-3" />
+        <div className="skeleton h-[2px] w-full mb-3" />
+        <div className="skeleton h-4 w-96 mb-10" />
         <div className="grid grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => <div key={i} className="skeleton h-28 rounded-xl" />)}
         </div>
@@ -56,18 +56,16 @@ export default function Dashboard() {
       />
 
       {/* Key metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 stagger">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 stagger">
         <MetricCard label="Monthly Take-Home" value={fmt(monthly)} help="Net pay after taxes and deductions" />
         <MetricCard label="Spent (MTD)" value={fmt(totalSpent)} delta="+$162 vs last mo" deltaColor="red" />
         <MetricCard label="Net Worth" value={fmt(netWorth)} />
-        <MetricCard label="Budget Adherence" value="87%" help="Percentage of categories on track" />
+        <MetricCard label="Budget Adherence" value="87%" help="Categories on track this month" />
       </div>
 
-      <hr className="border-border my-8" />
-
-      {/* Financial health ratios */}
-      <h2 className="text-lg font-bold text-primary mb-4">Financial Health</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 stagger">
+      {/* Financial health */}
+      <h2 className="text-lg font-semibold text-white mb-4">Financial Health</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 stagger">
         <StatusCard
           label="Savings Rate"
           value={`${savingsRate.toFixed(1)}%`}
@@ -75,13 +73,8 @@ export default function Dashboard() {
           color={savingsRate >= 20 ? "green" : savingsRate >= 10 ? "yellow" : "red"}
           description="20%+ is excellent. 10-20% is solid. Below 10% needs attention."
         />
-        <StatusCard
-          label="Debt-to-Income"
-          value={`${dti.toFixed(1)}%`}
-          status="Healthy"
-          color="green"
-          description="Below 20% is great. 20-36% is manageable. Above 36% limits borrowing."
-        />
+        <StatusCard label="Debt-to-Income" value={`${dti.toFixed(1)}%`} status="Healthy" color="green"
+          description="Below 20% is great. 20-36% is manageable. Above 36% limits borrowing." />
         <StatusCard
           label="Emergency Fund"
           value={`${efMonths.toFixed(1)} mo`}
@@ -91,18 +84,16 @@ export default function Dashboard() {
         />
       </div>
 
-      <hr className="border-border my-8" />
-
       {/* Tax breakdown */}
       {takeHome && (
         <div className="animate-fade-in">
-          <h2 className="text-lg font-bold text-primary mb-1">Take-Home Breakdown</h2>
-          <p className="text-dim text-[0.85rem] mb-4">Based on your income setup.</p>
+          <h2 className="text-lg font-semibold text-white mb-1">Take-Home Breakdown</h2>
+          <p className="text-dim text-[0.82rem] mb-4">Based on your income setup.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger">
             <MetricCard label="Annual Gross" value={fmt(takeHome.annual_gross)} />
             <MetricCard label="Federal Tax" value={fmt(takeHome.fed_tax)} delta={`${takeHome.marginal_fed.toFixed(0)}% marginal`} />
             <MetricCard label="State Tax" value={fmt(takeHome.state_tax)} />
-            <MetricCard label="Annual Take-Home" value={fmt(takeHome.annual_take_home)} delta={`${takeHome.effective_rate.toFixed(1)}% effective`} />
+            <MetricCard label="Take-Home" value={fmt(takeHome.annual_take_home)} delta={`${takeHome.effective_rate.toFixed(1)}% effective rate`} />
           </div>
         </div>
       )}

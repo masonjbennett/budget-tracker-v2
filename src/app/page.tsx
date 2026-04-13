@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import MetricCard from "@/components/MetricCard";
 import StatusCard from "@/components/StatusCard";
+import PageHeader from "@/components/PageHeader";
+import Footer from "@/components/Footer";
 
 function fmt(val: number, decimals = 0): string {
   return `$${val.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
@@ -15,16 +17,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     api<any>("/api/take-home", {
-      gross_salary: 95000,
-      state: "New York",
-      filing_status: "Single",
-      contribution_401k: 6,
-      health_insurance: 180,
-      hsa: 100,
-      bonus_amount: 10000,
-      bonus_type: "Annual (spread monthly)",
-      student_loan_interest: 0,
-      charitable: 0,
+      gross_salary: 95000, state: "New York", filing_status: "Single",
+      contribution_401k: 6, health_insurance: 180, hsa: 100,
+      bonus_amount: 10000, bonus_type: "Annual (spread monthly)",
+      student_loan_interest: 0, charitable: 0,
     })
       .then(setTakeHome)
       .catch(console.error)
@@ -33,13 +29,12 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="animate-pulse">
-        <div className="h-8 bg-surface rounded w-80 mb-2" />
-        <div className="h-4 bg-surface rounded w-96 mb-8" />
+      <div>
+        <div className="skeleton h-8 w-80 mb-2" />
+        <div className="skeleton h-1 w-full mb-2" />
+        <div className="skeleton h-4 w-96 mb-8" />
         <div className="grid grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-surface rounded-xl" />
-          ))}
+          {[...Array(4)].map((_, i) => <div key={i} className="skeleton h-28 rounded-xl" />)}
         </div>
       </div>
     );
@@ -55,12 +50,13 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-primary">Financial Health Dashboard</h1>
-      <p className="text-dim mt-1 mb-6">
-        Your financial overview at a glance — updated as you log expenses and adjust your budget.
-      </p>
+      <PageHeader
+        title="Financial Health Dashboard"
+        description="Your financial overview at a glance — updated as you log expenses and adjust your budget."
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Key metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 stagger">
         <MetricCard label="Monthly Take-Home" value={fmt(monthly)} help="Net pay after taxes and deductions" />
         <MetricCard label="Spent (MTD)" value={fmt(totalSpent)} delta="+$162 vs last mo" deltaColor="red" />
         <MetricCard label="Net Worth" value={fmt(netWorth)} />
@@ -69,7 +65,9 @@ export default function Dashboard() {
 
       <hr className="border-border my-8" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      {/* Financial health ratios */}
+      <h2 className="text-lg font-bold text-primary mb-4">Financial Health</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 stagger">
         <StatusCard
           label="Savings Rate"
           value={`${savingsRate.toFixed(1)}%`}
@@ -95,11 +93,12 @@ export default function Dashboard() {
 
       <hr className="border-border my-8" />
 
+      {/* Tax breakdown */}
       {takeHome && (
-        <div>
-          <h2 className="text-xl font-bold text-primary mb-1">Take-Home Breakdown</h2>
-          <p className="text-dim text-sm mb-4">Based on your income setup.</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="animate-fade-in">
+          <h2 className="text-lg font-bold text-primary mb-1">Take-Home Breakdown</h2>
+          <p className="text-dim text-[0.85rem] mb-4">Based on your income setup.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger">
             <MetricCard label="Annual Gross" value={fmt(takeHome.annual_gross)} />
             <MetricCard label="Federal Tax" value={fmt(takeHome.fed_tax)} delta={`${takeHome.marginal_fed.toFixed(0)}% marginal`} />
             <MetricCard label="State Tax" value={fmt(takeHome.state_tax)} />
@@ -108,13 +107,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="text-center mt-16 pt-8 border-t border-border">
-        <p className="text-sm text-dim">
-          <a href="https://masonjbennett.com" target="_blank" className="text-accent font-medium hover:underline">Mason Bennett</a>
-          {" · "}FastAPI + Next.js{" · "}
-          <a href="https://github.com/masonjbennett/budgeting-app" target="_blank" className="text-dim hover:text-accent">GitHub</a>
-        </p>
-      </div>
+      <Footer />
     </div>
   );
 }

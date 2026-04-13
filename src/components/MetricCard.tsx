@@ -16,15 +16,16 @@ export default function MetricCard({ label, value, delta, deltaColor = "default"
   }[deltaColor];
 
   return (
-    <div className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-accent hover:-translate-y-0.5 transition-all duration-300 group">
-      <p className="text-xs uppercase tracking-wider text-dim font-medium" title={help}>
+    <div className="card group animate-fade-in">
+      <p className="text-[0.7rem] uppercase tracking-[0.06em] text-dim font-semibold" title={help}>
         {label}
+        {help && <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-accent cursor-help">?</span>}
       </p>
-      <p className="text-2xl font-bold text-primary mt-1 tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+      <p className="text-[1.65rem] font-bold text-primary mt-1.5 tracking-tight leading-tight" style={{ fontFamily: "var(--font-display)" }}>
         {value}
       </p>
       {delta && (
-        <p className={`text-sm mt-1 font-medium ${deltaColorClass}`}>
+        <p className={`text-[0.8rem] mt-1.5 font-medium ${deltaColorClass}`}>
           {delta}
         </p>
       )}

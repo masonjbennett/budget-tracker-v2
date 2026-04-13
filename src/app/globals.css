@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #1B2A4A;
+  --color-accent: #2E86AB;
+  --color-green: #2ECC71;
+  --color-red: #E74C3C;
+  --color-yellow: #F18F01;
+  --color-surface: #F8F9FC;
+  --color-border: #E2E8F0;
+  --color-dim: #6C7A96;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+  background: #FFFFFF;
+  color: #1B2A4A;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}

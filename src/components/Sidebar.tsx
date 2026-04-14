@@ -2,6 +2,65 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { useFinance } from "@/context/FinanceContext";
+
+function UserBadge() {
+  const { user, signIn, signUp, signOut } = useFinance();
+  const [showAuth, setShowAuth] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    setError("");
+    const result = mode === "login" ? await signIn(email, password) : await signUp(email, password);
+    if (result.error) setError(result.error);
+    else { setShowAuth(false); setEmail(""); setPassword(""); }
+  };
+
+  if (user) {
+    return (
+      <div className="mt-2 px-2 py-2 rounded-md bg-white/[0.03] border border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-[0.55rem] font-bold text-white">
+            {user.email?.[0]?.toUpperCase() || "U"}
+          </div>
+          <p className="text-[0.7rem] text-slate-400 truncate flex-1">{user.email}</p>
+          <button onClick={signOut} className="text-[0.6rem] text-slate-600 hover:text-slate-400 transition-colors">Log out</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showAuth) {
+    return (
+      <div className="mt-2 px-2 py-3 rounded-md bg-white/[0.03] border border-white/[0.06] space-y-2">
+        <div className="flex gap-1 text-[0.68rem]">
+          <button onClick={() => setMode("login")} className={`flex-1 py-1 rounded ${mode === "login" ? "bg-white/[0.08] text-white" : "text-slate-500"}`}>Log in</button>
+          <button onClick={() => setMode("signup")} className={`flex-1 py-1 rounded ${mode === "signup" ? "bg-white/[0.08] text-white" : "text-slate-500"}`}>Sign up</button>
+        </div>
+        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
+          className="w-full text-[0.75rem] px-2 py-1.5 rounded bg-[#0f172a] border border-[#334155]" />
+        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}
+          className="w-full text-[0.75rem] px-2 py-1.5 rounded bg-[#0f172a] border border-[#334155]"
+          onKeyDown={e => e.key === "Enter" && handleSubmit()} />
+        {error && <p className="text-[0.65rem] text-red">{error}</p>}
+        <button onClick={handleSubmit} className="w-full py-1.5 bg-blue-500 text-white text-[0.72rem] rounded font-medium hover:bg-blue-600 transition-colors">
+          {mode === "login" ? "Log in" : "Create account"}
+        </button>
+        <button onClick={() => setShowAuth(false)} className="w-full text-[0.65rem] text-slate-600 hover:text-slate-400">Cancel</button>
+      </div>
+    );
+  }
+
+  return (
+    <button onClick={() => setShowAuth(true)} className="mt-2 w-full px-2 py-2 rounded-md bg-white/[0.03] border border-white/[0.06] text-[0.72rem] text-slate-500 hover:text-slate-400 hover:border-white/[0.1] transition-all text-left">
+      Sign in to save your data
+    </button>
+  );
+}
 
 const NAV_GROUPS = [
   {
@@ -109,21 +168,8 @@ export default function Sidebar() {
           <span>Settings</span>
         </Link>
 
-        {/* User / Auth */}
-        <div className="mt-2 px-2 py-2 rounded-md bg-white/[0.03] border border-white/[0.06]">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-[0.55rem] font-semibold text-slate-300">
-              M
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[0.72rem] text-slate-400 truncate">
-                <a href="https://masonjbennett.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-300 transition-colors">
-                  Mason Bennett
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* User */}
+        <UserBadge />
       </div>
     </aside>
   );

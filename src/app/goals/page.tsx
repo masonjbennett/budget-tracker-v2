@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFinance } from "@/context/FinanceContext";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/components/Footer";
 
@@ -9,11 +10,8 @@ function fmt(val: number): string {
 }
 
 export default function GoalsPage() {
-  const [goals, setGoals] = useState([
-    { name: "Emergency Fund", target: 15000, current: 9500, deadline: "2027-12-31", priority: 1 },
-    { name: "Vacation Fund", target: 3000, current: 800, deadline: "2026-12-31", priority: 2 },
-    { name: "Down Payment", target: 50000, current: 1800, deadline: "2030-06-30", priority: 3 },
-  ]);
+  const { data, setGoals } = useFinance();
+  const goals = data.savings_goals;
   const [newGoal, setNewGoal] = useState({ name: "", target: 10000, current: 0, deadline: "2027-12-31", priority: 1 });
 
   const addGoal = () => {
@@ -25,10 +23,10 @@ export default function GoalsPage() {
 
   return (
     <div>
-      <PageHeader title="Savings Goals" description="Set targets, track progress, and see exactly how much to save each month." />
+      <PageHeader title="Savings Goals" description="Track progress — changes auto-save to your account." />
 
       <div className="space-y-4 mb-8 stagger">
-        {goals.sort((a, b) => a.priority - b.priority).map((goal, i) => {
+        {[...goals].sort((a, b) => a.priority - b.priority).map((goal, i) => {
           const pct = goal.target > 0 ? (goal.current / goal.target * 100) : 0;
           const remaining = goal.target - goal.current;
           const daysLeft = Math.max(0, Math.ceil((new Date(goal.deadline).getTime() - Date.now()) / 86400000));
@@ -41,7 +39,7 @@ export default function GoalsPage() {
               <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-3">
                   <span className="text-[1rem] font-bold text-white">{goal.name}</span>
-                  <span className="badge badge-blue">Priority #{goal.priority}</span>
+                  <span className="badge badge-blue">#{goal.priority}</span>
                 </div>
                 <span className={`text-[1.2rem] font-bold font-num text-${color}`}>{pct.toFixed(0)}%</span>
               </div>
@@ -50,10 +48,10 @@ export default function GoalsPage() {
               </div>
               <div className="flex justify-between text-[0.82rem]">
                 <span className="text-slate-400 font-num">{fmt(goal.current)} / {fmt(goal.target)}</span>
-                <span className="text-slate-500">{fmt(monthlyNeeded)}/mo needed · {daysLeft} days left</span>
+                <span className="text-slate-500">{fmt(monthlyNeeded)}/mo · {daysLeft}d left</span>
               </div>
               <div className="mt-3 flex items-center gap-3 pt-3 border-t border-white/[0.04]">
-                <input type="number" value={goal.current} onChange={(e) => {
+                <input type="number" value={goal.current} onChange={e => {
                   const updated = [...goals]; updated[i] = { ...goal, current: +e.target.value }; setGoals(updated);
                 }} className="w-32 text-[0.82rem]" />
                 <button onClick={() => setGoals(goals.filter((_, j) => j !== i))} className="text-[0.72rem] text-slate-600 hover:text-red transition-colors">Remove</button>
@@ -66,9 +64,9 @@ export default function GoalsPage() {
       <div className="card">
         <h3 className="text-[0.85rem] font-semibold text-white mb-3">Add Goal</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <input placeholder="Goal name" value={newGoal.name} onChange={(e) => setNewGoal({...newGoal, name: e.target.value})} />
-          <input type="number" placeholder="Target ($)" value={newGoal.target || ""} onChange={(e) => setNewGoal({...newGoal, target: +e.target.value})} />
-          <input type="date" value={newGoal.deadline} onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})} />
+          <input placeholder="Goal name" value={newGoal.name} onChange={e => setNewGoal({...newGoal, name: e.target.value})} />
+          <input type="number" placeholder="Target ($)" value={newGoal.target || ""} onChange={e => setNewGoal({...newGoal, target: +e.target.value})} />
+          <input type="date" value={newGoal.deadline} onChange={e => setNewGoal({...newGoal, deadline: e.target.value})} />
           <button onClick={addGoal} className="btn-primary py-2.5">Add Goal</button>
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { api } from "@/lib/api";
+import { useFinance } from "@/context/FinanceContext";
 import MetricCard from "@/components/MetricCard";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/components/Footer";
@@ -23,27 +22,13 @@ function InputField({ label, help, children }: { label: string; help?: string; c
 }
 
 export default function IncomePage() {
-  const [income, setIncome] = useState({
-    gross_salary: 95000, state: "New York", filing_status: "Single",
-    contribution_401k: 6, health_insurance: 180, hsa: 100,
-    bonus_amount: 10000, bonus_type: "Annual (spread monthly)",
-    student_loan_interest: 0, charitable: 0,
-  });
-  const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-
-  const calculate = async () => {
-    setLoading(true);
-    try { setResult(await api<any>("/api/take-home", income)); }
-    catch (e) { console.error(e); }
-    setLoading(false);
-  };
-
-  const u = (field: string, value: any) => setIncome((p) => ({ ...p, [field]: value }));
+  const { data, takeHome, updateIncome } = useFinance();
+  const income = data.income;
+  const u = (field: string, value: any) => updateIncome({ [field]: value });
 
   return (
     <div>
-      <PageHeader title="Income Setup" description="Configure your salary, deductions, and tax situation to calculate your true take-home pay." />
+      <PageHeader title="Income Setup" description="Adjust any field — your take-home pay updates instantly across all pages." />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-6">
@@ -59,12 +44,12 @@ export default function IncomePage() {
               <div className="grid grid-cols-2 gap-4">
                 <InputField label="State">
                   <select value={income.state} onChange={(e) => u("state", e.target.value)}>
-                    {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    {STATES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </InputField>
                 <InputField label="Filing Status">
                   <select value={income.filing_status} onChange={(e) => u("filing_status", e.target.value)}>
-                    {["Single","Married Filing Jointly","Married Filing Separately","Head of Household"].map((s) => <option key={s} value={s}>{s}</option>)}
+                    {["Single","Married Filing Jointly","Married Filing Separately","Head of Household"].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </InputField>
               </div>
@@ -102,7 +87,7 @@ export default function IncomePage() {
             <div className="space-y-4">
               <InputField label="Bonus Type">
                 <select value={income.bonus_type} onChange={(e) => u("bonus_type", e.target.value)}>
-                  {["None","Annual (spread monthly)","Signing (lump sum)"].map((s) => <option key={s} value={s}>{s}</option>)}
+                  {["None","Annual (spread monthly)","Signing (lump sum)"].map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </InputField>
               {income.bonus_type !== "None" && (
@@ -112,60 +97,44 @@ export default function IncomePage() {
               )}
             </div>
           </div>
-
-          <button onClick={calculate} disabled={loading}
-            className="btn-primary w-full py-3 flex items-center justify-center gap-2 disabled:opacity-50">
-            {loading ? (
-              <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Calculating...</>
-            ) : "Calculate Take-Home Pay"}
-          </button>
         </div>
 
+        {/* Results — updates live */}
         <div>
-          {result ? (
+          {takeHome ? (
             <div className="space-y-4 stagger sticky top-8">
               <div className="card bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border-blue-500/20">
                 <p className="text-[0.68rem] uppercase tracking-[0.08em] text-blue-400 font-semibold">Monthly Take-Home</p>
-                <p className="text-[2.5rem] font-bold text-white mt-1 leading-tight font-num">{fmt(result.monthly_take_home)}</p>
-                <p className="text-[0.82rem] text-slate-400 mt-1">{fmt(result.annual_take_home)} / year</p>
+                <p className="text-[2.5rem] font-bold text-white mt-1 leading-tight font-num">{fmt(takeHome.monthly_take_home)}</p>
+                <p className="text-[0.82rem] text-slate-400 mt-1">{fmt(takeHome.annual_take_home)} / year</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <MetricCard label="Federal Tax" value={fmt(result.fed_tax)} delta={`${result.marginal_fed.toFixed(0)}% marginal`} />
-                <MetricCard label="State Tax" value={fmt(result.state_tax)} />
-                <MetricCard label="FICA" value={fmt(result.fica)} />
-                <MetricCard label="Pre-Tax" value={fmt(result.pretax)} />
+                <MetricCard label="Federal Tax" value={fmt(takeHome.fed_tax)} delta={`${takeHome.marginal_fed.toFixed(0)}% marginal`} />
+                <MetricCard label="State Tax" value={fmt(takeHome.state_tax)} />
+                <MetricCard label="FICA" value={fmt(takeHome.fica)} />
+                <MetricCard label="Pre-Tax" value={fmt(takeHome.pretax)} />
               </div>
               <div className="card">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[0.78rem] text-slate-400">Effective Tax Rate</span>
-                  <span className="text-[1.1rem] font-bold text-yellow font-num">{result.effective_rate.toFixed(1)}%</span>
+                  <span className="text-[1.1rem] font-bold text-yellow font-num">{takeHome.effective_rate.toFixed(1)}%</span>
                 </div>
                 <div className="progress-track">
-                  <div className="progress-fill bg-yellow" style={{ width: `${result.effective_rate}%` }} />
+                  <div className="progress-fill bg-yellow" style={{ width: `${takeHome.effective_rate}%` }} />
                 </div>
-                <p className="text-[0.68rem] text-slate-600 mt-2">You keep {(100 - result.effective_rate).toFixed(1)}% of gross income after all taxes.</p>
+                <p className="text-[0.68rem] text-slate-600 mt-2">You keep {(100 - takeHome.effective_rate).toFixed(1)}% of gross income.</p>
               </div>
               <div className="card">
                 <h3 className="text-[0.78rem] font-semibold text-white mb-2">Deduction Summary</h3>
                 <div className="space-y-1.5 text-[0.82rem]">
-                  <div className="flex justify-between"><span className="text-slate-400">AGI</span><span className="font-num text-slate-300">{fmt(result.agi)}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-400">Standard Deduction</span><span className="font-num text-slate-300">-{fmt(result.std_ded)}</span></div>
-                  <div className="flex justify-between border-t border-white/[0.06] pt-1.5 mt-1.5"><span className="text-slate-300 font-medium">Taxable Income</span><span className="font-num text-white font-semibold">{fmt(result.taxable)}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-400">AGI</span><span className="font-num text-slate-300">{fmt(takeHome.agi)}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Standard Deduction</span><span className="font-num text-slate-300">-{fmt(takeHome.std_ded)}</span></div>
+                  <div className="flex justify-between border-t border-white/[0.06] pt-1.5 mt-1.5"><span className="text-slate-300 font-medium">Taxable Income</span><span className="font-num text-white font-semibold">{fmt(takeHome.taxable)}</span></div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="card min-h-[28rem] flex items-center justify-center sticky top-8">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-7 h-7 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <p className="text-sm text-slate-500 font-medium">Your take-home breakdown</p>
-                <p className="text-xs text-slate-600 mt-1 max-w-[16rem] mx-auto">Adjust your income details on the left and click Calculate to see your results.</p>
-              </div>
-            </div>
+            <div className="skeleton h-96 rounded-xl sticky top-8" />
           )}
         </div>
       </div>

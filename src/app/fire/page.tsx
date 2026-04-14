@@ -171,7 +171,7 @@ export default function FirePage() {
             ]}
             layout={{
               xaxis: { title: { text: "Age", font: { size: 12, color: "#64748b" } } },
-              yaxis: { title: { text: "Portfolio Value", font: { size: 12, color: "#64748b" } }, tickformat: "$,.0f" },
+              yaxis: { title: { text: "Portfolio Value", font: { size: 12, color: "#64748b" } }, tickprefix: "$", tickformat: ",.0s" },
               shapes: [
                 { type: "line", x0: result.retire_age, x1: result.retire_age, y0: 0, y1: 1, yref: "paper", line: { color: "#eab308", width: 1.5, dash: "dash" } },
                 { type: "line", x0: result.ages[0], x1: result.ages[result.ages.length - 1], y0: 0, y1: 0, line: { color: "#ef4444", width: 1, dash: "dash" } },

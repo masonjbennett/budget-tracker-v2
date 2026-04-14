@@ -39,10 +39,10 @@ export default function RingChart({ value, size = 120, strokeWidth = 8, color = 
         {/* Glow */}
         <circle
           cx={size / 2} cy={size / 2} r={radius} fill="none"
-          stroke={color} strokeWidth={strokeWidth + 6}
+          stroke={color} strokeWidth={strokeWidth + 4}
           strokeDasharray={circumference} strokeDashoffset={offset}
-          strokeLinecap="round" opacity={0.15}
-          style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1)", filter: "blur(4px)" }}
+          strokeLinecap="round" opacity={0.08}
+          style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1)", filter: "blur(3px)" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">

@@ -9,13 +9,13 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, loading: () 
 const CHART_LAYOUT: any = {
   paper_bgcolor: "rgba(0,0,0,0)",
   plot_bgcolor: "rgba(0,0,0,0)",
-  font: { family: "Inter, sans-serif", color: "#94a3b8", size: 12 },
+  font: { family: "Inter, sans-serif", color: "#555555", size: 12 },
   margin: { l: 80, r: 24, t: 16, b: 56 },
-  legend: { bgcolor: "rgba(0,0,0,0)", orientation: "h" as const, y: -0.2, font: { size: 11, color: "#64748b" } },
-  xaxis: { gridcolor: "rgba(51,65,85,0.25)", linecolor: "#334155", linewidth: 1, tickfont: { size: 11, color: "#64748b" }, automargin: true },
-  yaxis: { gridcolor: "rgba(51,65,85,0.25)", linecolor: "#334155", linewidth: 1, tickfont: { size: 11, color: "#64748b" }, automargin: true },
+  legend: { bgcolor: "rgba(0,0,0,0)", orientation: "h" as const, y: -0.2, font: { size: 11, color: "#555555" } },
+  xaxis: { gridcolor: "rgba(255,255,255,0.04)", linecolor: "rgba(255,255,255,0.06)", linewidth: 1, tickfont: { size: 11, color: "#555555" }, automargin: true },
+  yaxis: { gridcolor: "rgba(255,255,255,0.04)", linecolor: "rgba(255,255,255,0.06)", linewidth: 1, tickfont: { size: 11, color: "#555555" }, automargin: true },
   hovermode: "x unified" as const,
-  hoverlabel: { bgcolor: "#1e293b", font: { size: 12, color: "#f8fafc" }, bordercolor: "#334155" },
+  hoverlabel: { bgcolor: "#171717", font: { size: 12, color: "#ededed" }, bordercolor: "rgba(255,255,255,0.1)" },
 };
 
 interface ChartProps {

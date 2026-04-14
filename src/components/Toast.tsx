@@ -62,7 +62,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(t => (
           <div
             key={t.id}
-            className={`flex items-center gap-2.5 px-4 py-3 rounded-lg bg-[#1e293b] border border-[#334155] shadow-xl shadow-black/30 ${t.exiting ? "toast-exit" : "toast-enter"}`}
+            className={`flex items-center gap-2.5 px-4 py-3 rounded-lg bg-[#171717] border border-[rgba(255,255,255,0.06)] shadow-xl shadow-black/30 ${t.exiting ? "toast-exit" : "toast-enter"}`}
           >
             {iconMap[t.type]}
             <span className="text-[0.82rem] text-slate-200">{t.message}</span>

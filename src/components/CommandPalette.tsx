@@ -75,9 +75,9 @@ export default function CommandPalette() {
 
       {/* Dialog */}
       <div className="fixed top-[20%] left-1/2 -translate-x-1/2 z-[201] w-full max-w-lg animate-fade-in">
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl shadow-2xl shadow-black/50 overflow-hidden">
+        <div className="bg-[#09090b] border border-[#171717] rounded-xl shadow-2xl shadow-black/50 overflow-hidden">
           {/* Search */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-[#1e293b]">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-[#171717]">
             <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -89,7 +89,7 @@ export default function CommandPalette() {
               placeholder="Type a command or search..."
               className="flex-1 bg-transparent text-[0.9rem] text-white placeholder-slate-600 outline-none border-none p-0"
             />
-            <kbd className="text-[0.6rem] text-slate-600 bg-[#1e293b] px-1.5 py-0.5 rounded border border-[#334155]">ESC</kbd>
+            <kbd className="text-[0.6rem] text-slate-600 bg-[#171717] px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.08)]">ESC</kbd>
           </div>
 
           {/* Results */}
@@ -117,10 +117,10 @@ export default function CommandPalette() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-[#1e293b] px-4 py-2 flex items-center gap-4 text-[0.65rem] text-slate-600">
-            <span><kbd className="bg-[#1e293b] px-1 py-0.5 rounded border border-[#334155] mr-1">↑↓</kbd> navigate</span>
-            <span><kbd className="bg-[#1e293b] px-1 py-0.5 rounded border border-[#334155] mr-1">↵</kbd> select</span>
-            <span><kbd className="bg-[#1e293b] px-1 py-0.5 rounded border border-[#334155] mr-1">esc</kbd> close</span>
+          <div className="border-t border-[#171717] px-4 py-2 flex items-center gap-4 text-[0.65rem] text-slate-600">
+            <span><kbd className="bg-[#171717] px-1 py-0.5 rounded border border-[rgba(255,255,255,0.08)] mr-1">↑↓</kbd> navigate</span>
+            <span><kbd className="bg-[#171717] px-1 py-0.5 rounded border border-[rgba(255,255,255,0.08)] mr-1">↵</kbd> select</span>
+            <span><kbd className="bg-[#171717] px-1 py-0.5 rounded border border-[rgba(255,255,255,0.08)] mr-1">esc</kbd> close</span>
           </div>
         </div>
       </div>
